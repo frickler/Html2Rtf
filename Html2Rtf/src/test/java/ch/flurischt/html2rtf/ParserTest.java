@@ -15,7 +15,7 @@ import com.tutego.jrtf.Rtf;
 public class ParserTest {
 
 	private static final String SIMPLE = "mach mal e <b>test</b> fertig";
-	private static final String COMPLEX = "<i>dies ist ein <b>fetter</b> test</i>";
+	private static final String COMPLEX = "<i>dies ist ein <b>fe<u>tt</u>er</b> test</i>";
 
 	private static final String FILENAME = "/tmp/test.rtf";
 

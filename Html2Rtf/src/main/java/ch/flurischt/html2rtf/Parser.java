@@ -1,10 +1,11 @@
 package ch.flurischt.html2rtf;
 
 import static com.tutego.jrtf.Rtf.rtf;
-import static com.tutego.jrtf.RtfPara.p;
 import static com.tutego.jrtf.RtfText.bold;
 import static com.tutego.jrtf.RtfText.italic;
 import static com.tutego.jrtf.RtfText.text;
+import static com.tutego.jrtf.RtfText.underline;
+import static com.tutego.jrtf.RtfPara.p;
 
 import java.io.FileReader;
 
@@ -16,7 +17,7 @@ import org.jsoup.nodes.TextNode;
 import org.jsoup.safety.Whitelist;
 
 import com.tutego.jrtf.Rtf;
-import com.tutego.jrtf.RtfPara;
+import com.tutego.jrtf.RtfText;
 
 public class Parser {
 
@@ -41,10 +42,10 @@ public class Parser {
 	 */
 	private static Object traverseTree(Node curr) {
 		final int numOfChilds = curr.childNodeSize();
-		RtfPara childs[] = new RtfPara[numOfChilds];
+		ElementContainer childs = new ElementContainer();
 
 		for (int i = 0; i < numOfChilds; i++)
-			childs[i] = (RtfPara) traverseTree(curr.childNode(i));
+			childs.add(traverseTree(curr.childNode(i)));
 
 		return getRtfTNode(curr, childs);
 	}
@@ -60,30 +61,32 @@ public class Parser {
 	 *            the rtf child elements if any
 	 * @return an rtf child element
 	 */
-	private static Object getRtfTNode(Node node, RtfPara childs[]) {
+	private static Object getRtfTNode(Node node, ElementContainer childs) {
 		final String name = node.nodeName().toLowerCase();
 
 		Object ret = null;
 
-		System.out.println("===============");
-		/*System.out.println(e.nodeName());
-		System.out.println(e.ownText());
-		System.out.println(e.toString());
-		System.out.println("Mixed: " + e.is);*/
-		System.out.println("===============");
-
 		if(node instanceof TextNode) {
-			ret = p(text(((TextNode) node).text()));
+			ret = ((TextNode) node).text();
 		} else if(node instanceof Element) {
-			
-			Element e = (Element) node;
-			
+			//TODO i,b and u are the same code. COMMAND Pattern?
 			if ("body".equals(name)) {
-				ret = rtf().section(childs);
+				ret = rtf().section(childs.asParagraph());
 			} else if ("i".equals(name)) {
-				ret = p(italic(childs));
+				ElementContainer container = new ElementContainer();
+				for(RtfText t : childs.asTextList())
+					container.add(italic(t));
+				ret = container;
 			} else if ("b".equals(name)) {
-				ret = p(bold(e.ownText()));
+				ElementContainer container = new ElementContainer();
+				for(RtfText t : childs.asTextList())
+					container.add(bold(t));
+				ret = container;
+			}else if ("u".equals(name)) {
+				ElementContainer container = new ElementContainer();
+				for(RtfText t : childs.asTextList())
+					container.add(underline(t));
+				ret = container;
 			}	
 		}
 
