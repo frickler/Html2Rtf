@@ -1,6 +1,5 @@
 package ch.flurischt.html2rtf;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -8,9 +7,7 @@ import java.util.List;
 import static com.tutego.jrtf.RtfPara.p;
 
 import com.tutego.jrtf.RtfPara;
-import com.tutego.jrtf.RtfTemplate;
 import com.tutego.jrtf.RtfText;
-import com.tutego.jrtf.RtfTextPara;
 
 import static com.tutego.jrtf.RtfText.text;
 
