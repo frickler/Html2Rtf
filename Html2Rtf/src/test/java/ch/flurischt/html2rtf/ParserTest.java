@@ -11,6 +11,15 @@ import java.io.IOException;
 import org.junit.Test;
 
 import com.tutego.jrtf.Rtf;
+import static com.tutego.jrtf.Rtf.rtf;
+import static com.tutego.jrtf.RtfDocfmt.*;
+import static com.tutego.jrtf.RtfHeader.*;
+import static com.tutego.jrtf.RtfInfo.*;
+import static com.tutego.jrtf.RtfFields.*;
+import static com.tutego.jrtf.RtfPara.*;
+import static com.tutego.jrtf.RtfSectionFormatAndHeaderFooter.*;
+import static com.tutego.jrtf.RtfText.*;
+import static com.tutego.jrtf.RtfUnit.*;
 
 public class ParserTest {
 
@@ -39,6 +48,19 @@ public class ParserTest {
 		toFile(r, FILENAME);
 	}
 
+	@Test
+	public void testJrtFSyntax() throws IOException{
+		rtf().section(
+				p(
+						text("test"),
+						italic("bla")
+				), 
+				p(
+						text("neuer absatz")
+				)
+				).out(new FileWriter("/tmp/jrtf.rtf"));
+	}
+	
 	private void toFile(Rtf rtf, String filename) {
 		try {
 			rtf.out(new FileWriter(filename));
