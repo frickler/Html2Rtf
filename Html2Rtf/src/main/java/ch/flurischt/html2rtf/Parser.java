@@ -3,11 +3,11 @@ package ch.flurischt.html2rtf;
 import static com.tutego.jrtf.Rtf.rtf;
 import static com.tutego.jrtf.RtfText.bold;
 import static com.tutego.jrtf.RtfText.italic;
-import static com.tutego.jrtf.RtfText.text;
 import static com.tutego.jrtf.RtfText.underline;
-import static com.tutego.jrtf.RtfPara.p;
 
 import java.io.FileReader;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -21,6 +21,52 @@ import com.tutego.jrtf.RtfText;
 
 public class Parser {
 
+	private static final Map<String,NodeHandler<ElementContainer, Object>> handlers = new HashMap<String, NodeHandler<ElementContainer, Object> >();
+	
+	// setup the handlers
+	static{
+		
+		handlers.put("body", new NodeHandler<ElementContainer, Object>() {
+			
+			public Object handle(ElementContainer input) {
+				return rtf().section(input.asParagraph());
+			}
+			
+		});
+	
+		//TODO same code in three methods. not cool bro!
+		handlers.put("i", new NodeHandler<ElementContainer, Object>() {
+			
+			public Object handle(ElementContainer input) {
+				ElementContainer container = new ElementContainer();
+				for(RtfText t : input.asTextList())
+					container.add(italic(t));
+				return container;
+			}
+		});
+		
+		handlers.put("b", new NodeHandler<ElementContainer, Object>() {
+			
+			public Object handle(ElementContainer input) {
+				ElementContainer container = new ElementContainer();
+				for(RtfText t : input.asTextList())
+					container.add(bold(t));
+				return container;
+			}
+		});
+		
+		handlers.put("u", new NodeHandler<ElementContainer, Object>() {
+			
+			public Object handle(ElementContainer input) {
+				ElementContainer container = new ElementContainer();
+				for(RtfText t : input.asTextList())
+					container.add(underline(t));
+				return container;
+			}
+		});
+		
+	}
+	
 	public static Rtf parse(String html) {
 		html = Jsoup.clean(html, Whitelist.simpleText());
 		// force the given source to be in the body tag
@@ -69,25 +115,12 @@ public class Parser {
 		if(node instanceof TextNode) {
 			ret = ((TextNode) node).text();
 		} else if(node instanceof Element) {
-			//TODO i,b and u are the same code. COMMAND Pattern?
-			if ("body".equals(name)) {
-				ret = rtf().section(childs.asParagraph());
-			} else if ("i".equals(name)) {
-				ElementContainer container = new ElementContainer();
-				for(RtfText t : childs.asTextList())
-					container.add(italic(t));
-				ret = container;
-			} else if ("b".equals(name)) {
-				ElementContainer container = new ElementContainer();
-				for(RtfText t : childs.asTextList())
-					container.add(bold(t));
-				ret = container;
-			}else if ("u".equals(name)) {
-				ElementContainer container = new ElementContainer();
-				for(RtfText t : childs.asTextList())
-					container.add(underline(t));
-				ret = container;
-			}	
+			NodeHandler<ElementContainer, Object> handler = handlers.get(name);
+			
+			if(handler==null)
+				throw new RuntimeException("WTF? Don't know this tag"); //TODO
+			
+			ret = handler.handle(childs);
 		}
 
 		return ret;
