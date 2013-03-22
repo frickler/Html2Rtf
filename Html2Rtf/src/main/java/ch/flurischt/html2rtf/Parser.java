@@ -3,12 +3,16 @@ package ch.flurischt.html2rtf;
 import static com.tutego.jrtf.Rtf.rtf;
 import static com.tutego.jrtf.RtfPara.p;
 import static com.tutego.jrtf.RtfText.bold;
+import static com.tutego.jrtf.RtfText.italic;
+import static com.tutego.jrtf.RtfText.text;
 
 import java.io.FileReader;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
+import org.jsoup.nodes.Node;
+import org.jsoup.nodes.TextNode;
 import org.jsoup.safety.Whitelist;
 
 import com.tutego.jrtf.Rtf;
@@ -35,12 +39,12 @@ public class Parser {
 	 *            the starting element
 	 * @return a jrtf rtf document
 	 */
-	private static Object traverseTree(Element curr) {
-		final int numOfChilds = curr.children().size();
+	private static Object traverseTree(Node curr) {
+		final int numOfChilds = curr.childNodeSize();
 		RtfPara childs[] = new RtfPara[numOfChilds];
 
 		for (int i = 0; i < numOfChilds; i++)
-			childs[i] = (RtfPara) traverseTree(curr.child(i));
+			childs[i] = (RtfPara) traverseTree(curr.childNode(i));
 
 		return getRtfTNode(curr, childs);
 	}
@@ -56,25 +60,31 @@ public class Parser {
 	 *            the rtf child elements if any
 	 * @return an rtf child element
 	 */
-	private static Object getRtfTNode(Element e, RtfPara childs[]) {
-		final String name = e.nodeName().toLowerCase();
+	private static Object getRtfTNode(Node node, RtfPara childs[]) {
+		final String name = node.nodeName().toLowerCase();
 
 		Object ret = null;
 
 		System.out.println("===============");
-		System.out.println(e.nodeName());
-		System.out.println(e.val());
+		/*System.out.println(e.nodeName());
 		System.out.println(e.ownText());
 		System.out.println(e.toString());
+		System.out.println("Mixed: " + e.is);*/
 		System.out.println("===============");
 
-		// TODO
-		if ("body".equals(name)) {
-			ret = rtf().section(childs);
-		} else if ("i".equals(name)) {
-
-		} else if ("b".equals(name)) {
-			ret = p(bold(e.ownText()));
+		if(node instanceof TextNode) {
+			ret = p(text(((TextNode) node).text()));
+		} else if(node instanceof Element) {
+			
+			Element e = (Element) node;
+			
+			if ("body".equals(name)) {
+				ret = rtf().section(childs);
+			} else if ("i".equals(name)) {
+				ret = p(italic(childs));
+			} else if ("b".equals(name)) {
+				ret = p(bold(e.ownText()));
+			}	
 		}
 
 		return ret;
