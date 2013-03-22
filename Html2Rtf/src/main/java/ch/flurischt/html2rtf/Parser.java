@@ -1,9 +1,16 @@
 package ch.flurischt.html2rtf;
 
+import com.tutego.jrtf.Rtf;
 import static com.tutego.jrtf.Rtf.rtf;
-import static com.tutego.jrtf.RtfText.bold;
-import static com.tutego.jrtf.RtfText.italic;
-import static com.tutego.jrtf.RtfText.underline;
+import static com.tutego.jrtf.RtfDocfmt.*;
+import static com.tutego.jrtf.RtfHeader.*;
+import static com.tutego.jrtf.RtfInfo.*;
+import static com.tutego.jrtf.RtfFields.*;
+import static com.tutego.jrtf.RtfPara.*;
+import static com.tutego.jrtf.RtfSectionFormatAndHeaderFooter.*;
+import static com.tutego.jrtf.RtfText.*;
+import static com.tutego.jrtf.RtfUnit.*;
+import com.tutego.jrtf.RtfText;
 
 import java.io.FileReader;
 import java.util.HashMap;
@@ -16,8 +23,6 @@ import org.jsoup.nodes.Node;
 import org.jsoup.nodes.TextNode;
 import org.jsoup.safety.Whitelist;
 
-import com.tutego.jrtf.Rtf;
-import com.tutego.jrtf.RtfText;
 
 public class Parser {
 
@@ -65,9 +70,18 @@ public class Parser {
 			}
 		});
 		
+		//TODO does not work with the current Jsoup Whitelist
+		handlers.put("br", new NodeHandler<ElementContainer, Object>() {
+			
+			public Object handle(ElementContainer input) {
+				return lineBreak();
+			}
+		});
+		
 	}
 	
 	public static Rtf parse(String html) {
+		//TODO simpleText() strips the <br> tag. is this a problem?
 		html = Jsoup.clean(html, Whitelist.simpleText());
 		// force the given source to be in the body tag
 		Document doc = Jsoup.parseBodyFragment(html);
