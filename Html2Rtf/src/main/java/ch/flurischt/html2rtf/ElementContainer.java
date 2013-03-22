@@ -35,14 +35,19 @@ public class ElementContainer {
 		return list;
 	}
 
-	public List<RtfPara> asParagraph() {
-		List<RtfPara> paras = new ArrayList<RtfPara>();
-		// TODO this makes a paragraph out of every text. stupid...
-		for (Object o : content) {
-			paras.add(p(o));
-		}
+	/**
+	 * puts the whole content of this container into a paragraph
+	 * @return
+	 */
+	public RtfPara asParagraph() {
+		//TODO remove all Collections and switch to arrays
+		List<RtfText> texts = asTextList();
+		RtfText[] textArray = new RtfText[texts.size()];
 
-		return paras;
+		for(int i=0;i<textArray.length;i++)
+			textArray[i] = texts.get(i);
+		
+		return p(textArray);
 	}
 
 }
