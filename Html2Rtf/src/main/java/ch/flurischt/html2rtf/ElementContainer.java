@@ -1,15 +1,14 @@
 package ch.flurischt.html2rtf;
 
+import static com.tutego.jrtf.RtfPara.p;
+import static com.tutego.jrtf.RtfText.text;
+
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
-import static com.tutego.jrtf.RtfPara.p;
-
 import com.tutego.jrtf.RtfPara;
 import com.tutego.jrtf.RtfText;
-
-import static com.tutego.jrtf.RtfText.text;
 
 public class ElementContainer {
 

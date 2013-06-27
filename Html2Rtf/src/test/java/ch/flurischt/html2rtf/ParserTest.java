@@ -8,8 +8,6 @@ import java.io.PrintStream;
 
 import org.junit.Test;
 
-import sun.org.mozilla.javascript.internal.ast.ForInLoop;
-
 import ch.flurischt.converter.Converter;
 
 public class ParserTest {

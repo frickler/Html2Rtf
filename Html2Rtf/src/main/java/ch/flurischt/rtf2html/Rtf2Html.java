@@ -2,11 +2,9 @@ package ch.flurischt.rtf2html;
 
 import java.io.ByteArrayInputStream;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 
 import javax.swing.text.BadLocationException;
 import javax.swing.text.DefaultStyledDocument;
@@ -17,7 +15,6 @@ import javax.swing.text.rtf.RTFEditorKit;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Node;
-import org.jsoup.parser.Tag;
 
 import ch.flurischt.rtf2html.parsers.BooleanElementParser;
 import ch.flurischt.rtf2html.parsers.FontElementParser;
@@ -99,7 +96,7 @@ public class Rtf2Html {
 		if (node == null)
 			return null;
 
-		// Überprüfung ob es sich um den letzten Nopde handelt
+		// ï¿½berprï¿½fung ob es sich um den letzten Nopde handelt
 		int index = node.siblingIndex();
 		if (index + 1 > node.siblingNodes().size() - 1)
 			return null;

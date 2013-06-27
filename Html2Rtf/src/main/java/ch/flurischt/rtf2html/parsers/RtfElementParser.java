@@ -9,8 +9,6 @@ import javax.swing.text.Element;
 import org.jsoup.nodes.Node;
 import org.jsoup.parser.Tag;
 
-import ch.flurischt.rtf2html.RtfUtils;
-
 public abstract class RtfElementParser {
 
 	private Tag tag;
