@@ -23,7 +23,7 @@ public class Converter {
 	 * @return
 	 */
 	public static String toRtf(String html) {
-		Rtf rtf = Html2RtfParser.parse(html);
+		Rtf rtf = new Html2RtfParser().parse(html);
 		StringWriter s = new StringWriter();
 		rtf.out(s);
 		return s.toString();
