@@ -1,5 +1,6 @@
 package ch.flurischt.converter;
 
+import java.io.IOException;
 import java.io.StringWriter;
 
 import ch.flurischt.html2rtf.Html2RtfParser;
@@ -21,8 +22,9 @@ public class Converter {
 	 * @param html
 	 * 
 	 * @return
+	 * @throws IOException 
 	 */
-	public static String toRtf(String html) {
+	public static String toRtf(String html) throws IOException {
 		Rtf rtf = new Html2RtfParser().parse(html);
 		StringWriter s = new StringWriter();
 		rtf.out(s);

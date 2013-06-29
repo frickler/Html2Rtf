@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<configuration>
+	<tags>
+		<!-- 
+			these must implement NodeHandler<ElementContainer, Object>
+			you can specify your own classes as long as the program can 
+			find them in the classpath 
+		-->
+		<handler>
+			<tag>body</tag>
+			<class>ch.flurischt.html2rtf.handler.BodyTag</class>
+		</handler>
+		<handler>
+			<tag>i</tag>
+			<class>ch.flurischt.html2rtf.handler.ItalicTag</class>
+		</handler>
+		<handler>
+			<tag>b</tag>
+			<class>ch.flurischt.html2rtf.handler.BoldTag</class>
+		</handler>
+		<handler>
+			<tag>u</tag>
+			<class>ch.flurischt.html2rtf.handler.UnderlinedTag</class>
+		</handler>
+		<handler>
+			<tag>br</tag>
+			<class>ch.flurischt.html2rtf.handler.BrTag</class>
+		</handler>
+	</tags>
+	<attributes>
+		<!-- 
+			TODO attribute-handlers combined with tags would be super cool 
+		
+			idea: something like 
+				<attr name="font-color"><tags><a/><i/></tags><class>ch.xyz...</class></attr>	
+			would be called "ch.xyz..." for each processed a or i tag
+		-->
+	</attributes>
+</configuration>

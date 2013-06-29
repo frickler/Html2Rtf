@@ -1,12 +1,8 @@
 package ch.flurischt.html2rtf;
 
-import static com.tutego.jrtf.Rtf.rtf;
-import static com.tutego.jrtf.RtfText.bold;
-import static com.tutego.jrtf.RtfText.italic;
-import static com.tutego.jrtf.RtfText.lineBreak;
-import static com.tutego.jrtf.RtfText.underline;
-
 import java.io.FileReader;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -16,67 +12,68 @@ import org.jsoup.nodes.Element;
 import org.jsoup.nodes.Node;
 import org.jsoup.nodes.TextNode;
 import org.jsoup.safety.Whitelist;
+import org.jsoup.select.Elements;
 
 import com.tutego.jrtf.Rtf;
-import com.tutego.jrtf.RtfText;
 
 public class Html2RtfParser {
 
+	/**
+	 * default to our config inside the jar
+	 */
+	public static final String DEFAULT_CONFIG_FILE = "/html2rtf_config.xml";
+
 	private final Map<String, NodeHandler<ElementContainer, Object>> handlers = new HashMap<String, NodeHandler<ElementContainer, Object>>();
 
-	public Html2RtfParser(){
-		setUp();
+	public Html2RtfParser() throws IOException {
+		InputStream configFile = getClass().getResourceAsStream(
+				DEFAULT_CONFIG_FILE);
+		setUp(configFile);
 	}
-	
-	// setup the handlers
-	private void setUp() {
-		handlers.put("body", new NodeHandler<ElementContainer, Object>() {
 
-			public Object handle(ElementContainer input) {
-				return rtf().section(input.asParagraph());
+	public Html2RtfParser(InputStream configFile) throws IOException {
+		setUp(configFile);
+	}
+
+	/**
+	 * parses the config xml file and creates the handlers map. in the given xml
+	 * file for each tagname a handler-class can be specified. an instance of this class
+	 * is put into the handlers map (as long as this class exists in the classpath)
+	 * 
+	 * @param handlersConfig
+	 * @throws IOException
+	 */
+	private void setUp(InputStream configFile) throws IOException {
+		Document doc = Jsoup.parse(configFile, null, "/");
+		Elements tags = doc.select("tags > handler");
+		for (Element handlerTag : tags) {
+			String classname = null;
+			String tagname = null;
+			for (Element e : handlerTag.children()) {
+				if ("class".equals(e.tagName().toLowerCase())) {
+					classname = e.text();
+				} else if ("tag".equals(e.tagName().toLowerCase())) {
+					tagname = e.text();
+				}
+			}
+			if (classname == null || tagname == null)
+				throw new RuntimeException("wrong config file!");
+
+			try {
+				Class<?> cls = Class.forName(classname);
+				@SuppressWarnings("unchecked")
+				NodeHandler<ElementContainer, Object> handler = (NodeHandler<ElementContainer, Object>) cls
+						.newInstance();
+				handlers.put(tagname, handler);
+			} catch (ClassNotFoundException e1) {
+				throw new RuntimeException("wrong config file!", e1);
+			} catch (InstantiationException e1) {
+				throw new RuntimeException("wrong config file!", e1);
+			} catch (IllegalAccessException e1) {
+				throw new RuntimeException("wrong config file!", e1);
 			}
 
-		});
-
-		// TODO same code in three methods. not cool bro!
-		handlers.put("i", new NodeHandler<ElementContainer, Object>() {
-
-			public Object handle(ElementContainer input) {
-				ElementContainer container = new ElementContainer();
-				for (RtfText t : input.asTextList())
-					container.add(italic(t));
-				return container;
-			}
-		});
-
-		handlers.put("b", new NodeHandler<ElementContainer, Object>() {
-
-			public Object handle(ElementContainer input) {
-				ElementContainer container = new ElementContainer();
-				for (RtfText t : input.asTextList())
-					container.add(bold(t));
-				return container;
-			}
-		});
-
-		handlers.put("u", new NodeHandler<ElementContainer, Object>() {
-
-			public Object handle(ElementContainer input) {
-				ElementContainer container = new ElementContainer();
-				for (RtfText t : input.asTextList())
-					container.add(underline(t));
-				return container;
-			}
-		});
-
-		// TODO does not work with the current Jsoup Whitelist
-		handlers.put("br", new NodeHandler<ElementContainer, Object>() {
-
-			public Object handle(ElementContainer input) {
-				return lineBreak();
-			}
-		});
-
+		}
 	}
 
 	public Rtf parse(String html) {
