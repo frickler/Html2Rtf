@@ -33,7 +33,7 @@
 		
 			idea: something like 
 				<attr name="font-color"><tags><a/><i/></tags><class>ch.xyz...</class></attr>	
-			would be called "ch.xyz..." for each processed a or i tag
+			would call "ch.xyz..." for each processed a or i tag
 		-->
 	</attributes>
 </configuration>
