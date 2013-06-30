@@ -76,12 +76,6 @@ public class Converter {
 
 		CommandLine line = parser.parse(options, args);
 
-		// validate that block-size has been set
-		if (line.hasOption("block-size")) {
-			// print the value of block-size
-			System.out.println(line.getOptionValue("block-size"));
-		}
-
 		String inFile = null;
 		String outFile = null;
 		String mode = null;
