@@ -66,11 +66,11 @@ public class Html2RtfParser {
 						.newInstance();
 				handlers.put(tagname, handler);
 			} catch (ClassNotFoundException e1) {
-				throw new RuntimeException("wrong config file!", e1);
+				throw new IOException("wrong config file!", e1);
 			} catch (InstantiationException e1) {
-				throw new RuntimeException("wrong config file!", e1);
+				throw new IOException("wrong config file!", e1);
 			} catch (IllegalAccessException e1) {
-				throw new RuntimeException("wrong config file!", e1);
+				throw new IOException("wrong config file!", e1);
 			}
 
 		}
@@ -131,8 +131,9 @@ public class Html2RtfParser {
 
 			NodeHandler<ElementContainer, Object> handler = handlers.get(name);
 
+			//TODO better use a NoOpHandler that ignores the tag and log it?
 			if (handler == null)
-				throw new RuntimeException("WTF? Don't know this tag: " + name); // TODO
+				throw new RuntimeException("WTF? Don't know this tag: " + name);
 
 			ret = handler.handle(childs);
 		}
