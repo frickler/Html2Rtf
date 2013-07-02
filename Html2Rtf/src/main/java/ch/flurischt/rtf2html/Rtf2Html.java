@@ -17,7 +17,6 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Node;
 
 import ch.flurischt.rtf2html.parsers.BooleanElementParser;
-import ch.flurischt.rtf2html.parsers.FontElementParser;
 import ch.flurischt.rtf2html.parsers.RtfElementParser;
 
 public class Rtf2Html {
@@ -35,7 +34,7 @@ public class Rtf2Html {
 		body = document.body();
 
 		// setup the handlers
-		parserItems.add(new FontElementParser("font"));
+		// parserItems.add(new FontElementParser("font"));
 		parserItems.add(new BooleanElementParser("b", StyleConstants.Bold));
 		parserItems.add(new BooleanElementParser("i", StyleConstants.Italic));
 		parserItems
@@ -62,106 +61,13 @@ public class Rtf2Html {
 
 	}
 
-	// private void checkForTag(String tag, Object constant) {
-	// Iterator<Entry<Node, Element>> it = entries.entrySet().iterator();
-	//
-	// while (it.hasNext()) {
-	// Map.Entry<Node, Element> entry = it.next();
-	// if (RtfUtils.getBooleanValue(entry.getValue(), constant)
-	// && !checkDomNodeForProperty(entry.getKey(), tag)) {
-	// org.jsoup.nodes.Element boldNode = new org.jsoup.nodes.Element(
-	// Tag.valueOf(tag), "");
-	//
-	// changeParent(entry.getKey(), boldNode);
-	//
-	// Node n = getNextSibling(boldNode);
-	// while (checkNodeForProperty(n, constant)
-	// && !checkDomNodeForProperty(n, tag)) {
-	//
-	// changeParent(n, boldNode);
-	//
-	// if (!it.hasNext())
-	// break;
-	//
-	// // n = it.next().getKey();
-	// n = getNextSibling(n);
-	// }
-	// }
-	// // it.remove(); // avoids a ConcurrentModificationException
-	// }
-	// }
-
-	private Node getNextSibling(org.jsoup.nodes.Node node) {
-
-		if (node == null)
-			return null;
-
-		// �berpr�fung ob es sich um den letzten Nopde handelt
-		int index = node.siblingIndex();
-		if (index + 1 > node.siblingNodes().size() - 1)
-			return null;
-
-		return node.siblingNodes().get(index + 1);
-	}
-
-	private Boolean checkDomNodeForProperty(org.jsoup.nodes.Node node,
-			String tagName) {
-
-		while (node.parent() != null) {
-			if (node instanceof org.jsoup.nodes.Element) {
-				org.jsoup.nodes.Element ele = (org.jsoup.nodes.Element) node;
-				if (ele.tagName().equals(tagName))
-					return true;
-
-			}
-			node = node.parent();
-		}
-
-		return false;
-	}
-
-	private Boolean checkNodeForProperty(org.jsoup.nodes.Node node,
-			Object constant) {
-
-		Node sibling = getNextSibling(node);
-
-		if (sibling == null)
-			return false;
-
-		// Wenn keine Kinder vorhanden sind, es ein ein Leaf
-		if (sibling.childNodes().size() == 0) {
-			if (entries.get(sibling) != null) {
-				if (!RtfUtils.getBooleanValue(entries.get(sibling), constant)) {
-					return false;
-				}
-			}
-		} else {
-			return checkAllDomChildrenHaveProperty(sibling, constant);
-		}
-		return false;
-	}
-
-	private Boolean checkAllDomChildrenHaveProperty(org.jsoup.nodes.Node node,
-			Object constant) {
-
-		for (Node child : node.childNodes()) {
-			if (entries.get(child) != null)
-				if (!RtfUtils.getBooleanValue(entries.get(child), constant))
-					return false;
-
-			return checkAllDomChildrenHaveProperty(child, constant);
-		}
-		return true;
-
-	}
-
 	protected org.jsoup.nodes.Element removeEmptyNodes(org.jsoup.nodes.Element e) {
-		for (org.jsoup.nodes.Element element : e.select("*")) {
-
-			if (!element.hasText()) {
-				element.remove();
-			}
-		}
+		// for (org.jsoup.nodes.Element element : e.select("*")) {
+		//
+		// if (!element.hasText()) {
+		// element.remove();
+		// }
+		// }
 		return e;
 	}
 
@@ -199,6 +105,10 @@ public class Rtf2Html {
 		String s;
 		try {
 			s = document.getText(i, j - i);
+
+			if (s.trim().isEmpty())
+				return;
+
 			org.jsoup.nodes.TextNode n = new org.jsoup.nodes.TextNode(s, "");
 			body.appendChild(n);
 
