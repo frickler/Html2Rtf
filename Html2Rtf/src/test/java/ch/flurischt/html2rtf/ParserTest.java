@@ -29,22 +29,22 @@ public class ParserTest {
 
 		String rtf = RTF_COMPLEX;
 
-		for (int i = 0; i < 10; i++) {
+		// for (int i = 0; i < 10; i++) {
 
-			String html = Converter.toHtml(rtf);
+		String html = Converter.toHtml(rtf);
 
-			System.out.println(html);
+		System.out.println(html);
 
-			assertNotNull(html);
+		assertNotNull(html);
 
-			toFile(html, "complex.html");
+		toFile(html, "complex.html");
 
-			rtf = Converter.toRtf(html);
+		rtf = Converter.toRtf(html);
 
-			toFile(rtf, "complex.rtf");
+		toFile(rtf, "complex.rtf");
 
-			assertNotNull(rtf);
-		}
+		assertNotNull(rtf);
+		// }
 
 	}
 
