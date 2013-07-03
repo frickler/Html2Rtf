@@ -9,6 +9,7 @@ import java.util.Map.Entry;
 import javax.swing.text.Element;
 
 import org.jsoup.nodes.Node;
+import org.jsoup.nodes.TextNode;
 import org.jsoup.parser.Tag;
 
 import ch.flurischt.rtf2html.DomUtils;
@@ -31,9 +32,9 @@ public abstract class RtfElementParser {
 	protected abstract org.jsoup.nodes.Element createNewElement(
 			Element rtfElement, Tag tag);
 
-	public void parseDocElements(Iterator<Entry<Node, Element>> it) {
+	public void parseDocElements(Iterator<Entry<TextNode, Element>> it) {
 		while (it.hasNext()) {
-			Map.Entry<Node, Element> entry = it.next();
+			Map.Entry<TextNode, Element> entry = it.next();
 			if (checkEntry(entry.getValue())) {
 
 				List<Node> siblings = new ArrayList<Node>();

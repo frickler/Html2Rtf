@@ -15,26 +15,29 @@ import javax.swing.text.rtf.RTFEditorKit;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Node;
+import org.jsoup.nodes.TextNode;
+import org.jsoup.parser.Tag;
 
 import ch.flurischt.rtf2html.parsers.BooleanElementParser;
+import ch.flurischt.rtf2html.parsers.FontElementParser;
 import ch.flurischt.rtf2html.parsers.RtfElementParser;
 
 public class Rtf2Html {
 
 	private List<RtfElementParser> parserItems;
 	private org.jsoup.nodes.Element body;
-	private Map<Node, Element> entries;
+	private Map<TextNode, Element> entries;
 
 	public Rtf2Html() {
 		super();
-		entries = new LinkedHashMap<Node, Element>();
+		entries = new LinkedHashMap<TextNode, Element>();
 		parserItems = new ArrayList<RtfElementParser>();
 
 		org.jsoup.nodes.Document document = Jsoup.parse("<body></body>");
 		body = document.body();
 
 		// setup the handlers
-		// parserItems.add(new FontElementParser("font"));
+		parserItems.add(new FontElementParser("font"));
 		parserItems.add(new BooleanElementParser("b", StyleConstants.Bold));
 		parserItems.add(new BooleanElementParser("i", StyleConstants.Italic));
 		parserItems
@@ -48,16 +51,35 @@ public class Rtf2Html {
 		readString(s2, defaultstyleddocument, rtfeditorkit);
 		scanDocument(defaultstyleddocument);
 
-		buildDom();
+		// Parse all rtf elements
+		for (RtfElementParser r : parserItems) {
+			r.parseDocElements(entries.entrySet().iterator());
+		}
+
+		// Parse all textnodes
+		for (Map.Entry<TextNode, Element> entry : entries.entrySet()) {
+			TextNode txtNode = entry.getKey();
+			// Replace \n an element node
+			while (txtNode.getWholeText().contains("\n")){
+				int pos = txtNode.getWholeText().indexOf("\n");
+				String txt = txtNode.getWholeText();
+				txtNode.before(new TextNode(txt.substring(0, pos), ""));
+				txtNode.before(new org.jsoup.nodes.Element(Tag.valueOf("br"), ""));
+				txtNode.text(txt.substring(pos + 1));
+			}
+			
+		}
 
 		return removeEmptyNodes(body).toString();
 	}
 
-	private void buildDom() {
+	protected String processTextNodes(String elementText) {
 
-		for (RtfElementParser r : parserItems) {
-			r.parseDocElements(entries.entrySet().iterator());
-		}
+		if (elementText == null)
+			return null;
+
+		// Add <br>-Tag
+		return elementText.replaceAll("\\n", "<br>\n");
 
 	}
 
@@ -106,10 +128,11 @@ public class Rtf2Html {
 		try {
 			s = document.getText(i, j - i);
 
-			if (s.trim().isEmpty())
-				return;
+//			if (s.trim().isEmpty())
+//				return;
 
 			org.jsoup.nodes.TextNode n = new org.jsoup.nodes.TextNode(s, "");
+			
 			body.appendChild(n);
 
 			entries.put(n, element);
