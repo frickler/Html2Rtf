@@ -6,6 +6,11 @@
 	<packaging>jar</packaging>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>Html2Rtf</name>
+
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+	</properties>
+
 	<dependencies>
 		<dependency>
 			<groupId>org.jsoup</groupId>
@@ -35,27 +40,27 @@
 	</dependencies>
 	<build>
 		<plugins>
-		  <plugin> 
-		    <artifactId>maven-assembly-plugin</artifactId>
-		    <executions>
-		      <execution>
-		        <phase>package</phase>
-		        <goals>
-		          <goal>attached</goal>
-		        </goals>
-		      </execution>
-		    </executions>
-		    <configuration>
-		      <descriptorRefs>
-		        <descriptorRef>jar-with-dependencies</descriptorRef>
-		      </descriptorRefs>
-				<archive>
-					<manifest>
-						<mainClass>ch.flurischt.converter.Converter</mainClass>
-					</manifest>
-				</archive>
-		    </configuration>
-		  </plugin>
+			<plugin>
+				<artifactId>maven-assembly-plugin</artifactId>
+				<executions>
+					<execution>
+						<phase>package</phase>
+						<goals>
+							<goal>attached</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<descriptorRefs>
+						<descriptorRef>jar-with-dependencies</descriptorRef>
+					</descriptorRefs>
+					<archive>
+						<manifest>
+							<mainClass>ch.flurischt.converter.Converter</mainClass>
+						</manifest>
+					</archive>
+				</configuration>
+			</plugin>
 		</plugins>
 	</build>
 </project>
